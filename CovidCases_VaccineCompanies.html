@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <title>Points on a map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+    h2,
+    h3 {
+      margin: 10px;
+      font-size: 1.2em;
+    }
+
+    h3 {
+      font-size: 1em;
+    }
+
+    p {
+      font-size: 0.85em;
+      margin: 10px;
+      text-align: left;
+    }
+
+
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+
+
+    .map-overlay {
+      position: absolute;
+      bottom: 0 ;
+      right: 0;
+      background: rgba(255, 255, 255, 0.8);
+      margin-right: 20px;
+      font-family: Arial, sans-serif;
+      overflow: auto;
+      border-radius: 3px;
+    }
+
+    #features {
+      top: 110px  ;
+      height: 130px;
+      margin-top: 20px;
+      width: 300px;
+    }
+
+    </style>
+  </head>
+  <body>
+    <div id='map'></div>
+    <div class='map-overlay' id='features'><h2> Total Covid-19 Cases and </h2><h2>  Top 10 Vaccine Comapnies</h2><div id='pd'><p>Put your mouse on the red circles</p><p>Or Click on the Vaccine Icon</p></div></div>
+    <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYWxlY2NhaSIsImEiOiJja2xscWM0bmkwMXRmMnBxajVwcWVxNW8xIn0.4DSIVs1qG6P74Y7bm1tlsA';
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/aleccai/cklocpa8v36pf17mmylr1w8ra',
+
+    });
+
+  map.on('click', function(e) {
+
+  var features = map.queryRenderedFeatures(e.point, {
+    layers: ['vaccinecomponies-ceqxmt']
+  });
+
+  if (!features.length) {
+    return;
+  }
+
+  var feature = features[0];
+
+  var popup = new mapboxgl.Popup({ offset: [0, -15] })
+    .setLngLat(feature.geometry.coordinates)
+    .setHTML( '<p>' + feature.properties.descprition + '</p>')
+    .addTo(map);
+});
+
+
+map.on('mousemove', function(e) {
+var country = map.queryRenderedFeatures(e.point, {
+  layers: ['covid-cases-with-coordinates-8tz0zm']
+});
+
+if (country.length > 0) {
+  document.getElementById('pd').innerHTML = '<p><strong><em>' + country[0].properties.cases + '</strong> cases </em></p>';
+} else {
+  document.getElementById('pd').innerHTML = '<p> Put your mouse on the red circles Or Click on the Vaccine Icon </p>';
+}
+});
+
+
+
+    </script>
+  </body>
+</html>
